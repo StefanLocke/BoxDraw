@@ -58,6 +58,8 @@ public class Main extends Application {
 	
 	public LinkedList<Rectangle> rects = new LinkedList<Rectangle>();
 	
+	public Pane drawPane;
+	
 	public double startDragX = 0;
 	public double startDragY = 0;
 	public void startDragging(Event e) {
@@ -225,4 +227,34 @@ public class Main extends Application {
 			}
 		}
 	}
+	
+	@FXML
+	public void save() {
+		exportController.save();
+	}
+	
+	@FXML
+	public void load() {
+		exportController.load();
+		for (coord c : exportController.coords) {
+			Rectangle r = new Rectangle();
+			r.setX(c.relativeX * drawPane.getMaxWidth());
+			r.setY(c.relativeY * drawPane.getMaxHeight());
+			r.setWidth(c.relativeWidth * drawPane.getMaxWidth());
+			r.setHeight(c.relativeHeight * drawPane.getMaxHeight());
+			r.setFill(Color.rgb(200,200,200,0.2));
+			r.setStroke(Color.BLACK);
+			r.setStrokeWidth(1);
+			drawPane.getChildren().add(r);
+			rects.addFirst(r);
+		}
+	}
+	
+	@FXML
+	public void clear() {
+		drawPane.getChildren().clear();
+		rects.clear();
+		exportController.coords.clear();
+	}
+	
 }

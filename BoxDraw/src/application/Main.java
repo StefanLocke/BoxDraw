@@ -5,6 +5,8 @@ package application;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import application.ExportController.coord;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXML;
@@ -21,7 +23,7 @@ import javafx.scene.shape.Rectangle;
 
 
 public class Main extends Application {
-	
+	public ExportController exportController = new ExportController();
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -44,32 +46,17 @@ public class Main extends Application {
 	}
 	
 	
-	
-	
-	public class rectCoord {
+	public double getRelative(double current, double max) {
 		
-		public rectCoord() {
-			X = 0;
-			Y = 0;
-			Height = 0;
-			Width = 0;
-		}
-		public rectCoord(double X,double Y,double Height,double Width) {
-			this.X = X;
-			this.Y = Y;
-			this.Height = Height;
-			this.Width = Width;
-		}
-		double X ;
-		double Y;
-		double Height;
-		double Width;
 		
+		
+		return current/max;
 	}
 	
 	
+	
+	
 	public LinkedList<Rectangle> rects = new LinkedList<Rectangle>();
-	public ArrayList<rectCoord> coordList = new ArrayList<rectCoord>();
 	
 	public double startDragX = 0;
 	public double startDragY = 0;
@@ -91,12 +78,21 @@ public class Main extends Application {
 		
 	}
 	
+	
+	
+	
+	@FXML
 	public void dragging(Event e) {
 		if (e instanceof MouseEvent) {	
 			MouseEvent mouseevent = (MouseEvent) e;
+			Node source = (Node) mouseevent.getSource();
 			Rectangle rect = rects.getFirst();
 			double mouseX = mouseevent.getX();
 			double mouseY = mouseevent.getY();
+			mouseX = Math.min(mouseX,source.maxWidth(-1));
+			mouseY = Math.min(mouseY,source.maxHeight(-1));
+			mouseX = Math.max(mouseX,0);
+			mouseY = Math.max(mouseY,0);
 			
 			if (mouseX >= startDragX) {
 				rect.setX(startDragX);
@@ -119,18 +115,16 @@ public class Main extends Application {
 
 		}
 	}
-	
-public void endDragging(Event e) {
-	Rectangle rect = rects.getFirst();
-	
-	
-	
-	
-	double X = rect.getX();
-	double Y = rect.getY();
-	double Height = rect.getHeight();
-	double Width = rect.getWidth();
-	
+	@FXML
+	public void endDragging(Event e) {
+		Rectangle rect = rects.getFirst();
+		Pane source = (Pane) e.getSource();
+		
+		double relaX = getRelative(rect.getX(),source.getWidth());
+		double relaY = getRelative(rect.getY(),source.getHeight());
+		double relaWidth = getRelative(rect.getWidth(),source.getWidth());
+		double relaHeight = getRelative(rect.getHeight(),source.getHeight());
+		exportController.add(relaX,relaY,relaWidth,relaHeight);
 	}
 	
 	
